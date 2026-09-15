@@ -1,5 +1,5 @@
 // =====================================================================
-//  SWEEP & RECLAIM — independent backtest engine
+//  SWEEP & RECLAIM: independent backtest engine
 //  Implements Quant-Strategy-Spec.md v0.2 exactly (pre-registered).
 //  Anti-look-ahead: a pivot is only KNOWN N bars after it forms.
 // =====================================================================

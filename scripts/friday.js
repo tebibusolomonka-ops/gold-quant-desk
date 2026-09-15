@@ -20,4 +20,4 @@ let pos=0, tot=0;
 for(const y of Object.keys(years).sort()){ const a=years[y]; const mm=a.reduce((x,z)=>x+z,0)/a.length; if(mm>0)pos++; tot++; }
 console.log(`years with positive Friday mean: ${pos}/${tot}`);
 // in dollar terms at current ATR
-console.log(`at today's ATR ~$45: ≈ +$${(m*45).toFixed(1)}/oz per Friday`);
+console.log(`at today's ATR ~$45: ~ +$${(m*45).toFixed(1)}/oz per Friday`);

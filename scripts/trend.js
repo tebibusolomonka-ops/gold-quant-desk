@@ -1,5 +1,5 @@
 // =====================================================================
-//  DAILY TREND-FOLLOWING TEST — XAUUSD 2003-2026 (23.5y, 7324 bars)
+//  DAILY TREND-FOLLOWING TEST: XAUUSD 2003-2026 (23.5y, 7324 bars)
 //  PRE-REGISTERED params from decades of literature (NO tuning):
 //   A) TSMOM-252  : long if close > close 252d ago, else SHORT (Moskowitz et al.)
 //   B) TSMOM-252LF: same but long/FLAT

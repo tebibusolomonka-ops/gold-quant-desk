@@ -1,7 +1,7 @@
 // =====================================================================
-//  VOLATILITY PREDICTABILITY — the one structure finance says IS forecastable
+//  VOLATILITY PREDICTABILITY: the one structure finance says IS forecastable
 //  Data: 15m bars -> daily realized volatility (RV). In-sample 2021-24.
-//  Tests: 1) RV autocorrelation  2) next-day RV forecast R²
+//  Tests: 1) RV autocorrelation  2) next-day RV forecast R^2
 //         3) high/low vol regime persistence  4) practical size/stop table
 // =====================================================================
 const fs = require('fs');
@@ -38,13 +38,13 @@ function acf(x, lag) {
 console.log('\n--- RV autocorrelation (vs 2SE=' + (2 / Math.sqrt(rv.length)).toFixed(3) + ') ---');
 for (const L of [1, 2, 3, 5, 10, 20]) console.log(`  lag ${String(L).padStart(2)}: ${acf(rv, L).toFixed(3)}`);
 
-// 2) forecast R²: predict RV_t+1 with EWMA(RV) vs naive mean
+// 2) forecast R^2: predict RV_t+1 with EWMA(RV) vs naive mean
 let ew = rv[0]; const lam = 0.8; let sseF = 0, sseM = 0;
 for (let i = 0; i < rv.length - 1; i++) {
   if (i > 10) { sseF += (rv[i + 1] - ew) ** 2; sseM += (rv[i + 1] - mu) ** 2; }
   ew = lam * ew + (1 - lam) * rv[i];
 }
-console.log(`\nEWMA(0.8) next-day RV forecast R² = ${(1 - sseF / sseM).toFixed(3)}  (0 = useless, 1 = perfect)`);
+console.log(`\nEWMA(0.8) next-day RV forecast R^2 = ${(1 - sseF / sseM).toFixed(3)}  (0 = useless, 1 = perfect)`);
 
 // 3) regime persistence
 const q = [...rv].sort((a, b) => a - b);

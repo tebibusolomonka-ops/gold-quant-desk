@@ -1,5 +1,5 @@
 // =====================================================================
-//  GUARDRAIL — binding model judgment to an executable definition
+//  GUARDRAIL: binding model judgment to an executable definition
 //
 //  The problem this solves: an LLM asked "is this a valid setup?" will
 //  answer in natural language, and natural language is where "it looks
@@ -12,7 +12,7 @@
 //  function adjudicates.
 //
 //  Note the asymmetry: a PASS here does not mean the trade is good. The
-//  full-history test in this repository shows the opposite — signals
+//  full-history test in this repository shows the opposite: signals
 //  meeting every criterion below still lose money after costs. The
 //  guardrail enforces *honesty about what was seen*, not profitability.
 //  Those are different jobs and conflating them is how backtests lie.
@@ -56,7 +56,7 @@ function volSma(bars, len) {
 }
 
 // Indicator series are a pure function of the bar array, but adjudication
-// is called once per candidate bar — recomputing them each time makes the
+// is called once per candidate bar, and recomputing them each time makes the
 // guardrail O(n) per call and O(n^2) over a sweep. Cache per series.
 const _cache = new WeakMap();
 function indicators(bars, atrLen) {
@@ -156,7 +156,7 @@ function evaluateSetup(bars, i, dir, opts = {}) {
 
   // --- 4. participation --------------------------------------------
   const volOK = Number.isFinite(V) && bar.volume >= p.M * V;
-  // Volume units vary by feed — gold ticks arrive as small floats, index
+  // Volume units vary by feed: gold ticks arrive as small floats, index
   // futures as millions. Format for the magnitude actually present rather
   // than rounding a 0.6 and a 0.9 both to "1".
   const fmtVol = v => Math.abs(v) >= 100 ? String(Math.round(v)) : v.toPrecision(3);
@@ -190,7 +190,7 @@ function evaluateSetup(bars, i, dir, opts = {}) {
     break;
   }
   add('no_opposite_signal', !opposite,
-    opposite ? 'this bar also swept and reclaimed the opposite level — chop, skip' : 'no conflicting signal on this bar');
+    opposite ? 'this bar also swept and reclaimed the opposite level: chop, skip' : 'no conflicting signal on this bar');
 
   // --- 6. cooldown ---------------------------------------------------
   const cool = opts.lastSignal === undefined || (i - opts.lastSignal) >= p.C;
@@ -216,8 +216,8 @@ function finish(checks, detail) {
 function explain(result) {
   const lines = result.checks.map(c => `  ${c.pass ? 'PASS' : 'FAIL'}  ${c.name}: ${c.note}`);
   const head = result.valid
-    ? 'VALID SETUP — every criterion met'
-    : `NOT A SETUP — failed: ${result.failed.join(', ')}`;
+    ? 'VALID SETUP: every criterion met'
+    : `NOT A SETUP, failed: ${result.failed.join(', ')}`;
   return [head, ...lines].join('\n');
 }
 

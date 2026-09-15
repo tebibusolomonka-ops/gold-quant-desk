@@ -1,5 +1,5 @@
 // =====================================================================
-//  NON-OVERLAPPING momentum test — corrects the inflated t-stats in eda.js
+//  NON-OVERLAPPING momentum test: corrects the inflated t-stats in eda.js
 //  Overlapping forward windows violate independence and inflate t by ~sqrt(H).
 //  Here each observation uses a DISJOINT forward window.
 //  IN-SAMPLE ONLY (2021-2024). 2025-26 remains held out.

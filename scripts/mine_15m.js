@@ -1,7 +1,7 @@
 // =====================================================================
-//  PATTERN MINER — 15m XAUUSD intraday conditioning
-//  TRAIN 2021-2023 · VALIDATE 2024 · VAULT 2025-26 (one-shot)
-//  Tests: hour-of-day × prior-hour direction -> forward 8 bars (2h), ATR-norm.
+//  PATTERN MINER: 15m XAUUSD intraday conditioning
+//  TRAIN 2021-2023 | VALIDATE 2024 | VAULT 2025-26 (one-shot)
+//  Tests: hour-of-day x prior-hour direction -> forward 8 bars (2h), ATR-norm.
 //  Bar: |t|>=3.3 train, same-sign |t|>=2.0 validate.
 // =====================================================================
 const fs = require('fs');
@@ -51,7 +51,7 @@ for (const [name, pred] of F) {
   const t_ = test(pred, SPLITS.TRAIN);
   if (t_ && Math.abs(t_.t) >= 3.3) cands.push({ name, pred, train: t_ });
 }
-console.log(`TOTAL TESTS=${tests}  noise-expected max|t| ≈ ${Math.sqrt(2 * Math.log(tests)).toFixed(2)}`);
+console.log(`TOTAL TESTS=${tests}  noise-expected max|t| ~ ${Math.sqrt(2 * Math.log(tests)).toFixed(2)}`);
 console.log(`TRAIN survivors (|t|>=3.3): ${cands.length}\n`);
 for (const c of cands) {
   const v = test(c.pred, SPLITS.VALIDATE);

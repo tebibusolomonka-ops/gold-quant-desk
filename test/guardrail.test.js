@@ -2,7 +2,7 @@
 //  GUARDRAIL TESTS
 //  The guardrail's job is to be restrictive and to agree with the
 //  engine's independent implementation of the same definition. Two
-//  implementations agreeing is evidence the definition is unambiguous —
+//  implementations agreeing is evidence the definition is unambiguous,
 //  which was the whole point of writing it down as numbers.
 // =====================================================================
 const { test } = require('node:test');
@@ -59,7 +59,7 @@ test('a rejection names which criterion failed, not just that it failed', () => 
       assert.ok(c && typeof c.note === 'string' && c.note.length > 0,
         `criterion ${name} must carry an explanation`);
     }
-    assert.match(explain(r), /NOT A SETUP — failed:/);
+    assert.match(explain(r), /NOT A SETUP, failed:/);
   }
   assert.ok(checked > 0, 'expected at least one rejection to inspect');
 });
@@ -75,7 +75,7 @@ test('every criterion is reachable as a failure', () => {
   }
   for (const name of ['level_is_confirmed_pivot', 'sweep_depth', 'reclaim_close',
     'volume_confirmation', 'no_opposite_signal']) {
-    assert.ok(seen.has(name), `criterion "${name}" never rejected anything — dead rule`);
+    assert.ok(seen.has(name), `criterion "${name}" never rejected anything (dead rule)`);
   }
 });
 
@@ -93,7 +93,7 @@ test('a level is only usable once the pivot forming it is confirmed', () => {
     const d = evaluateSetup(bars, s.i, s.dir).detail;
     if (d.levelBar == null) continue;
     assert.ok(d.levelBar + N < s.i,
-      `pivot at ${d.levelBar} was not confirmed before bar ${s.i} — look-ahead`);
+      `pivot at ${d.levelBar} was not confirmed before bar ${s.i}: look-ahead`);
   }
 });
 

@@ -2,7 +2,7 @@
 
 A catalogue of wrong answers produced during this research, and how each was caught.
 
-Every entry below actually happened. None were hypothetical, and none were caught by the output *looking* wrong — each one looked right. They were caught by a verification step that existed independently of the answer, which is the only kind of check that works against plausible errors.
+Every entry below actually happened. None were hypothetical, and none were caught by the output *looking* wrong; each one looked right. They were caught by a verification step that existed independently of the answer, which is the only kind of check that works against plausible errors.
 
 Each entry follows the same structure: **what was produced**, **why it was believable**, **how it was caught**, **the fix**, and **the generalizable rule**.
 
@@ -24,7 +24,7 @@ Each entry follows the same structure: **what was produced**, **why it was belie
 
 ## 2. A summary endpoint returned month-scale extremes as intraday context
 
-**Produced.** A request for a 100-bar intraday summary came back with a high and low that were in fact the month's high and low. The analysis built a confident narrative around a dramatic intraday blow-off and crash — a move that had not happened that day.
+**Produced.** A request for a 100-bar intraday summary came back with a high and low that were in fact the month's high and low. The analysis built a confident narrative around a dramatic intraday blow-off and crash, a move that had not happened that day.
 
 **Why it was believable.** The numbers were genuine prices from the genuine instrument in the genuine period. Nothing was fabricated. The error was entirely in the *scope* of the aggregation, which the payload did not state.
 
@@ -38,13 +38,13 @@ Each entry follows the same structure: **what was produced**, **why it was belie
 
 ## 3. A statistical artifact that produced a "major discovery"
 
-**Produced.** A momentum test returned t-statistics up to **8.7** — far past any reasonable significance bar. Reported as a substantial finding.
+**Produced.** A momentum test returned t-statistics up to **8.7**, far past any reasonable significance bar. Reported as a substantial finding.
 
 **Why it was believable.** The arithmetic was correct. The code did exactly what it was asked. A t of 8.7 in a financial time series is extraordinary, and extraordinariness reads as importance rather than as a warning.
 
 **How it was caught.** The magnitude itself was the tell. Effects that large do not survive in liquid markets, so the result was treated as a bug hypothesis rather than a finding. The cause was overlapping forward windows: measuring a 96-bar forward return starting at every bar means each observation shares almost all of its data with its neighbours. That violates the independence assumption behind the t-statistic and inflates it by roughly the square root of the horizon.
 
-**Fix.** Re-run with disjoint, non-overlapping windows and detrended returns. Every t then fell between −1.78 and +1.62 — nothing significant.
+**Fix.** Re-run with disjoint, non-overlapping windows and detrended returns. Every t then fell between -1.78 and +1.62, nothing significant.
 
 **Rule.** *A result too good for its domain is a bug report.* Domain priors are a debugging tool. And independence is the assumption most often violated silently, because violating it produces confident numbers rather than errors.
 
@@ -60,13 +60,13 @@ Each entry follows the same structure: **what was produced**, **why it was belie
 
 **Fix.** Independent trade count is always the *entry* count. The platform's field is never quoted.
 
-**Rule.** *Check the denominator of any statistic a tool hands you.* A field name is a claim by the tool's author about their own semantics, not a specification. This error inflated the sample by 2.8× and biased the win rate upward — in the same direction as the hypothesis, which is the dangerous direction.
+**Rule.** *Check the denominator of any statistic a tool hands you.* A field name is a claim by the tool's author about their own semantics, not a specification. This error inflated the sample by 2.8x and biased the win rate upward, in the same direction as the hypothesis, which is the dangerous direction.
 
 ---
 
 ## 5. Silent rejection presenting as absence
 
-**Produced.** A strategy reported **0 trades despite 21 detected signals**. The natural reading — and the first one taken — was that the entry conditions were never met.
+**Produced.** A strategy reported **0 trades despite 21 detected signals**. The natural reading (and the first one taken) was that the entry conditions were never met.
 
 **Why it was believable.** Zero is a coherent answer to "how many trades." Nothing raised an error. The run completed successfully.
 
@@ -84,11 +84,11 @@ Each entry follows the same structure: **what was produced**, **why it was belie
 
 **Why it was believable.** The tool exposed scroll and range commands, they returned success, and the chart visibly moved to the requested dates.
 
-**How it was caught.** By checking the *content* of what came back rather than the success flag. After scrolling to May, the returned bars were still from July. The data endpoint always returns the most recent N bars, capped at 500, regardless of what the view is doing — which is about five days at 15-minute resolution.
+**How it was caught.** By checking the *content* of what came back rather than the success flag. After scrolling to May, the returned bars were still from July. The data endpoint always returns the most recent N bars, capped at 500, regardless of what the view is doing, which is about five days at 15-minute resolution.
 
 **Fix.** Abandon the export approach entirely and source data externally. That pivot is what eventually produced the 131,469-bar dataset and the result the whole repository rests on.
 
-**Rule.** *A success flag describes the call, not the answer.* Verify the payload against what was asked for, especially when the tool's UI and its data path are separate systems — which they usually are.
+**Rule.** *A success flag describes the call, not the answer.* Verify the payload against what was asked for, especially when the tool's UI and its data path are separate systems, which they usually are.
 
 ---
 
@@ -98,13 +98,13 @@ Each entry follows the same structure: **what was produced**, **why it was belie
 
 **Why it was believable.** It was the real output of correct code on real data. It was also the *best* result among eight configurations, which is exactly what makes it feel like a signal.
 
-**How it was caught.** Two safeguards, both agreed before the run. First, a pre-registered minimum of 100 trades — this cell had 20. Second, a stated rule that the best cell of many is the expected behaviour of noise, not evidence. Testing on 24× more data later returned 0.73.
+**How it was caught.** Two safeguards, both agreed before the run. First, a pre-registered minimum of 100 trades; this cell had 20. Second, a stated rule that the best cell of many is the expected behaviour of noise, not evidence. Testing on 24x more data later returned 0.73.
 
 The useful control: a deliberately naive moving-average-cross probe, run purely as a baseline, scored profit factor 1.27 on the same window. Any method scoring 1.70 needed to be understood against a strawman scoring 1.27, not against 1.0.
 
 **Fix.** The kill rule executed as written.
 
-**Rule.** *An unqualified number is not a finding.* Report the sample size in the same breath as the statistic, and always run a deliberately stupid baseline — it calibrates what "good" looks like on this data, which nobody's intuition does reliably.
+**Rule.** *An unqualified number is not a finding.* Report the sample size in the same breath as the statistic, and always run a deliberately stupid baseline; it calibrates what "good" looks like on this data, which nobody's intuition does reliably.
 
 ---
 
@@ -116,7 +116,7 @@ The useful control: a deliberately naive moving-average-cross probe, run purely 
 
 **How it was caught.** By counting the tests. With 24 tests at a 5% threshold, roughly 1.2 false positives are expected by construction. Finding two is not a discovery; it is the null hypothesis behaving exactly as advertised.
 
-**Fix.** No claim made. The later mining runs formalized this: 98 daily and 50 intraday candidates, every one counted, against a corrected bar of |t| ≥ 3.3, with a train/validate/vault split whose vault was examined once. One survivor from 98 — which is approximately what chance plus one real effect predicts.
+**Fix.** No claim made. The later mining runs formalized this: 98 daily and 50 intraday candidates, every one counted, against a corrected bar of |t| >= 3.3, with a train/validate/vault split whose vault was examined once. One survivor from 98, which is approximately what chance plus one real effect predicts.
 
 **Rule.** *The significance threshold depends on how many times you looked.* The number of tests run is part of the result and has to be reported with it. An agent that can run hundreds of variants cheaply is the entity most exposed to this, because the cost of one more test feels like zero.
 
@@ -130,7 +130,7 @@ The useful control: a deliberately naive moving-average-cross probe, run purely 
 
 **How it was caught.** By printing them side by side. On two bars, price swept a level above *and* a level below and closed back inside both, firing a long and a short simultaneously. With pyramiding disabled the second order silently reversed the first.
 
-**Fix.** An explicit conflict rule — bars firing both directions are chop and are skipped. The sample contained 204 such bars over 5.5 years. The rule is now criterion 5 in [`guardrail.js`](guardrail.js).
+**Fix.** An explicit conflict rule: bars firing both directions are chop and are skipped. The sample contained 204 such bars over 5.5 years. The rule is now criterion 5 in [`guardrail.js`](guardrail.js).
 
 **Rule.** *Two counts that should match are a free assertion.* Emit both and compare them. The bug here was not in either number; it was in the gap, and nothing that reported a single number could have surfaced it.
 
@@ -138,7 +138,7 @@ The useful control: a deliberately naive moving-average-cross probe, run purely 
 
 ## What the pattern is
 
-Eight of these nine errors share a shape: **the output was well-formed and internally consistent, and wrong about something the output could not describe** — its scope, its units, its denominator, its independence assumptions, or how many times it had been attempted.
+Eight of these nine errors share a shape: **the output was well-formed and internally consistent, and wrong about something the output could not describe**: its scope, its units, its denominator, its independence assumptions, or how many times it had been attempted.
 
 None were caught by reading the answer more carefully. Every one was caught by a check that did not depend on the answer:
 
@@ -155,7 +155,7 @@ That is the practical case for verification that is *structural* rather than *at
 
 ## Related
 
-- [`RULEBOOK.md`](RULEBOOK.md) — the operating rules, including the ones added in response to the failures above
-- [`EVALUATION.md`](EVALUATION.md) — the criteria used to grade analytical output in this domain
-- [`guardrail.js`](guardrail.js) — the executable definition that replaced subjective setup identification
-- [`../research/program.md`](../research/program.md) — the full research log these were drawn from
+- [`RULEBOOK.md`](RULEBOOK.md): the operating rules, including the ones added in response to the failures above
+- [`EVALUATION.md`](EVALUATION.md): the criteria used to grade analytical output in this domain
+- [`guardrail.js`](guardrail.js): the executable definition that replaced subjective setup identification
+- [`../research/program.md`](../research/program.md): the full research log these were drawn from

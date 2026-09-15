@@ -1,5 +1,5 @@
 // =====================================================================
-//  EXPLORATORY DATA ANALYSIS — XAUUSD 15m
+//  EXPLORATORY DATA ANALYSIS: XAUUSD 15m
 //  Purpose: characterise the market BEFORE inventing strategies.
 //  DISCIPLINE: in-sample = 2021-2024 only. 2025-2026 is HELD OUT and
 //  must not be looked at until a hypothesis is pre-registered.
@@ -101,4 +101,4 @@ for (const H of [8, 16, 32, 64]) {
   const med = arr => { const s = [...arr].sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; };
   console.log(`   ${String(H).padStart(6)} | ${med(mfe).toFixed(3).padStart(14)} | ${med(mae).toFixed(3).padStart(14)} | ${(winFirst/tot*100).toFixed(1)}%`);
 }
-console.log('\n(Note: P(hit +1R first) near 50% = no directional edge from a random entry — as expected.)');
+console.log('\n(Note: P(hit +1R first) near 50% = no directional edge from a random entry, as expected.)');

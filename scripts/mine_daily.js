@@ -1,5 +1,5 @@
 // =====================================================================
-//  PATTERN MINER — DAILY XAUUSD 2003-2026
+//  PATTERN MINER: DAILY XAUUSD 2003-2026
 //  Honest protocol:
 //   TRAIN    2003-2016  (search here)
 //   VALIDATE 2017-2021  (survivors must repeat here, blind)
@@ -88,7 +88,7 @@ for (const [name, pred] of F) for (const h of HORIZONS) {
   if (Math.abs(tr_.t) >= 3.3) candidates.push({ name, h, train: tr_ });
 }
 console.log(`features=${F.length}  horizons=${HORIZONS.length}  TOTAL TESTS=${tests}`);
-console.log(`noise-expected max|t| across ${tests} tests ≈ ${Math.sqrt(2 * Math.log(tests)).toFixed(2)}`);
+console.log(`noise-expected max|t| across ${tests} tests ~ ${Math.sqrt(2 * Math.log(tests)).toFixed(2)}`);
 console.log(`TRAIN survivors (|t|>=3.3): ${candidates.length}\n`);
 
 for (const c of candidates) {

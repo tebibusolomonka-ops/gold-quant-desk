@@ -17,7 +17,7 @@ The trading is the domain. The subject is what happens when a capable model does
 | | |
 |---|---|
 | [**Failure modes**](agent/FAILURE-MODES.md) | Nine wrong answers produced during this research, why each was believable, and the check that caught it |
-| [**Evaluation rubric**](agent/EVALUATION.md) | How to grade analytical output in this domain — including a worked comparison of a fluent wrong answer against a correct one |
+| [**Evaluation rubric**](agent/EVALUATION.md) | How to grade analytical output in this domain, including a worked comparison of a fluent wrong answer against a correct one |
 | [**Architecture**](agent/ARCHITECTURE.md) | Tool layer, cross-session memory, a self-amending rulebook, and the execution boundary |
 | [**Rulebook**](agent/RULEBOOK.md) | The operating instructions, including the `SUSPENDED` block the agent wrote against its own prior orders |
 | [**Guardrail**](agent/guardrail.js) | A subjective judgment call ("is this a setup?") replaced by an executable definition that says which criterion failed |
@@ -26,7 +26,7 @@ The trading is the domain. The subject is what happens when a capable model does
 
 ### What this demonstrates
 
-- **Catching confidently wrong output in a specialist domain.** Every error in the catalogue was well-formed, internally consistent, and wrong about something the output could not describe — its scope, its units, its denominator, its independence assumptions. None were caught by reading more carefully.
+- **Catching confidently wrong output in a specialist domain.** Every error in the catalogue was well-formed, internally consistent, and wrong about something the output could not describe: its scope, its units, its denominator, its independence assumptions. None were caught by reading more carefully.
 - **Verification that is structural rather than attentive.** Counters on both sides of a silent drop. Aggregates checked against their rows. A deliberately naive baseline to calibrate what "good" looks like. Attention degrades exactly when a result is exciting; instrumentation does not.
 - **Constraining model judgment with executable rules.** The guardrail accepts 2.4% of arbitrary bars and names the failing criterion on rejection, which makes disagreement inspectable instead of rhetorical.
 - **Accepting an unwanted answer.** The kill rule was written while the strategy was still believed in, and executed when the evidence arrived.
@@ -35,7 +35,7 @@ The trading is the domain. The subject is what happens when a capable model does
 
 ## The result
 
-The strategy under test was **"liquidity sweep + reclaim close on volume"** — a staple of retail Smart Money Concepts trading. Sweep a prior high or low, close back inside within a couple of bars on elevated volume, enter on the reclaim, stop beyond the sweep extreme.
+The strategy under test was **"liquidity sweep + reclaim close on volume"**, a staple of retail Smart Money Concepts trading. Sweep a prior high or low, close back inside within a couple of bars on elevated volume, enter on the reclaim, stop beyond the sweep extreme.
 
 Tested on **131,469 bars of XAUUSD 15-minute data, 2021-01-03 to 2026-07-24**, with modeled costs, anti-look-ahead pivots and conservative intrabar fills:
 
@@ -57,7 +57,7 @@ Negative every year except one:
 
 Before the full dataset existed, the same strategy was run inside a charting platform whose plan capped history at about three months. That window said **profit factor 1.70**. The full 5.5 years said **0.73**.
 
-The favourable window was 2026 — the single positive year in the sample.
+The favourable window was 2026, the single positive year in the sample.
 
 That gap is the most useful thing in this repository. A three-month backtest did not merely overstate the edge; it inverted the sign.
 
@@ -67,7 +67,7 @@ Strip the costs out and the raw signal's edge is **statistically indistinguishab
 
 The mechanism is stop geometry, not market opinion. A stop placed at `sweep extreme +/- 0.25 x ATR(14)` produces an average R of about **3.3 price points**. A 0.30 spread therefore consumes roughly **9% of every R** before the trade has an opinion about anything.
 
-A pre-registered prediction — that expectancy would peak at a reclaim window of K=1-2 and decay as K rose — **failed**. Observed: K1 -0.135, K2 -0.159, K3 -0.104, K4 -0.096, K5 -0.100. No decay, no structure, all negative. The setup does not behave the way the stop-run theory says it should.
+A pre-registered prediction (that expectancy would peak at a reclaim window of K=1-2 and decay as K rose) **failed**. Observed: K1 -0.135, K2 -0.159, K3 -0.104, K4 -0.096, K5 -0.100. No decay, no structure, all negative. The setup does not behave the way the stop-run theory says it should.
 
 ---
 
@@ -77,18 +77,18 @@ Several mechanisms were tested for edge. Two survived.
 
 | Claim | Status |
 |---|---|
-| Sweep / reclaim (SMC) edge | Killed — t = -6.27 over 1,953 trades |
+| Sweep / reclaim (SMC) edge | Killed, t = -6.27 over 1,953 trades |
 | 15m momentum, mean-reversion, session direction | Nothing significant after correcting for overlapping windows |
-| Daily trend systems beating buy-and-hold (23.5y) | None did — B&H 8.3%/yr Sharpe 0.51 vs best trend 0.45 |
+| Daily trend systems beating buy-and-hold (23.5y) | None did: B&H 8.3%/yr Sharpe 0.51 vs best trend 0.45 |
 | Intraday entry-timing patterns | 0 of 50 survived training |
-| **Volatility predictability** | **Survived** — RV lag-1 autocorrelation 0.398 (t = 13) |
-| **End-of-week long tilt** | **Survived** — 1 of 98 mined tests, positive in 19/23 years |
+| **Volatility predictability** | **Survived**: RV lag-1 autocorrelation 0.398 (t = 13) |
+| **End-of-week long tilt** | **Survived**: 1 of 98 mined tests, positive in 19/23 years |
 
-**Direction is unpredictable at every horizon tested. Magnitude is not.** Realized-volatility lag-1 autocorrelation is 0.398 against direction's -0.014 — tomorrow's *range* is roughly **28x more forecastable** than tomorrow's *sign*. Volatility regimes persist at 46-48% against a 25% base rate. Next-day RV forecast R-squared is 0.146; next-day direction R-squared is 0.0002.
+**Direction is unpredictable at every horizon tested. Magnitude is not.** Realized-volatility lag-1 autocorrelation is 0.398 against direction's -0.014; tomorrow's *range* is roughly **28x more forecastable** than tomorrow's *sign*. Volatility regimes persist at 46-48% against a 25% base rate. Next-day RV forecast R-squared is 0.146; next-day direction R-squared is 0.0002.
 
-The practical consequence is that the useful output of this kind of research is **risk engineering, not signal generation** — position sizing conditioned on a volatility regime, stop distances that fit the day's realistic range budget, and knowing which hours actually move.
+The practical consequence is that the useful output of this kind of research is **risk engineering, not signal generation**: position sizing conditioned on a volatility regime, stop distances that fit the day's realistic range budget, and knowing which hours actually move.
 
-The end-of-week tilt is the only directional pattern that cleared a corrected significance bar across a three-way split. It is worth about 0.078 ATR per event — a tilt, not a system. It is reported here because it survived, not because it is tradeable on its own.
+The end-of-week tilt is the only directional pattern that cleared a corrected significance bar across a three-way split. It is worth about 0.078 ATR per event, a tilt, not a system. It is reported here because it survived, not because it is tradeable on its own.
 
 ---
 
@@ -101,7 +101,7 @@ npm test
 
 The test suite re-runs the engine and the miner against committed data and asserts the published numbers to four decimal places. If a change to the engine moves a result, the test fails.
 
-The full 15m dataset is 14 MB and is not committed. A **2021 sample** is, so everything runs out of the box — the scripts warn loudly on stderr when they fall back to it, because a sample number is not a README number.
+The full 15m dataset is 14 MB and is not committed. A **2021 sample** is, so everything runs out of the box; the scripts warn loudly on stderr when they fall back to it, because a sample number is not a README number.
 
 To build the full history:
 
@@ -154,7 +154,7 @@ node agent/guardrail.js bar=539 dir=-1
 ```
 
 ```
-NOT A SETUP — failed: volume_confirmation
+NOT A SETUP, failed: volume_confirmation
   PASS  level_is_confirmed_pivot: level 1850.59 from bar 528, confirmed 6 bars before this one
   PASS  sweep_depth: wick 0.92 beyond level = 0.253 ATR (need > 0.1)
   PASS  reclaim_close: close 1846.94 is back below 1850.59
@@ -180,15 +180,15 @@ Three design choices made that possible:
 
 **Pre-registration.** Baseline parameters and a predicted result shape were committed to before any run. Predicting the *shape* of a result is a stronger test than finding a winner, and the K-sweep prediction failing is more informative than it passing would have been.
 
-**Counted tests.** The pattern miner ran 98 daily and 50 intraday candidates against a corrected significance bar (|t| >= 3.3) and a TRAIN / VALIDATE / VAULT split with a one-shot vault. One survivor from 98 is roughly what chance and a real weekend effect jointly predict — a credential for the pipeline, not a discovery to size up on.
+**Counted tests.** The pattern miner ran 98 daily and 50 intraday candidates against a corrected significance bar (|t| >= 3.3) and a TRAIN / VALIDATE / VAULT split with a one-shot vault. One survivor from 98 is roughly what chance and a real weekend effect jointly predict, a credential for the pipeline, not a discovery to size up on.
 
-The surrounding system — an application with no API driven over a debug protocol, a plain-markdown memory layer that survives between sessions, and the boundary that kept the agent from ever placing an order — is described in [`agent/ARCHITECTURE.md`](agent/ARCHITECTURE.md).
+The surrounding system (an application with no API driven over a debug protocol, a plain-markdown memory layer that survives between sessions, and the boundary that kept the agent from ever placing an order) is described in [`agent/ARCHITECTURE.md`](agent/ARCHITECTURE.md).
 
 ### Grading the output
 
 Judging this kind of work is harder than producing it, because in this domain fluent and correct come apart. A response that says *"gold swept liquidity below 4,022 and reclaimed on strong volume, targeting 4,111"* is well-structured, uses the framework properly, and is indistinguishable from a response written by someone who never looked at the chart.
 
-[`agent/EVALUATION.md`](agent/EVALUATION.md) is the rubric used here: eight dimensions, three of them gating, scored against the failures that motivated them — sourcing, calibration, cost realism, look-ahead discipline, multiple-testing disclosure, baseline comparison, falsifiability, and refusal to fabricate. It includes a worked comparison of two answers to the same question, one fluent and wrong, one correct and less satisfying, and a note on why the second scores higher despite being the one a reader enjoys less.
+[`agent/EVALUATION.md`](agent/EVALUATION.md) is the rubric used here: eight dimensions, three of them gating, scored against the failures that motivated them: sourcing, calibration, cost realism, look-ahead discipline, multiple-testing disclosure, baseline comparison, falsifiability, and refusal to fabricate. It includes a worked comparison of two answers to the same question, one fluent and wrong, one correct and less satisfying, and a note on why the second scores higher despite being the one a reader enjoys less.
 
 ---
 
@@ -196,13 +196,13 @@ Judging this kind of work is harder than producing it, because in this domain fl
 
 Nine wrong answers were produced during this research. Each was well-formed, internally consistent, and wrong about something the output could not describe. A few, in short:
 
-**Overlapping windows inflated a t-statistic to 8.7.** Momentum looked like a major finding. Forward windows that overlap violate independence and inflate t by roughly the square root of the horizon. Re-run with disjoint windows and detrended, every t fell between -1.78 and +1.62 — nothing.
+**Overlapping windows inflated a t-statistic to 8.7.** Momentum looked like a major finding. Forward windows that overlap violate independence and inflate t by roughly the square root of the horizon. Re-run with disjoint windows and detrended, every t fell between -1.78 and +1.62, nothing.
 
-**"0 trades" was ambiguous.** A strategy returned no trades despite firing 21 signals. The entries were not un-generated; they were silently rejected because position notional exceeded account capital. An explicit entry-attempt counter isolated it in minutes. Fill rejection is silent — always compare attempts against fills.
+**"0 trades" was ambiguous.** A strategy returned no trades despite firing 21 signals. The entries were not un-generated; they were silently rejected because position notional exceeded account capital. An explicit entry-attempt counter isolated it in minutes. Fill rejection is silent; always compare attempts against fills.
 
 **A tool returned month-scale extremes as intraday context.** A request for a 100-bar intraday summary came back with the month's high and low. The analysis built a confident narrative around a dramatic move that had not happened that day. Every number in it was genuine; only the scope was wrong, and the payload did not state its scope.
 
-**The platform's `total_trades` counted exit legs, not trades.** Partial exits meant one entry produced up to three legs. A reported 65 "trades" was 23 independent positions, and the reported win rate was leg-based — biased upward, in the same direction as the hypothesis.
+**The platform's `total_trades` counted exit legs, not trades.** Partial exits meant one entry produced up to three legs. A reported 65 "trades" was 23 independent positions, and the reported win rate was leg-based, biased upward, in the same direction as the hypothesis.
 
 The full catalogue, with how each was caught and the generalizable rule, is in [`agent/FAILURE-MODES.md`](agent/FAILURE-MODES.md). The short version: none were caught by reading the answer more carefully. Every one was caught by a check that did not depend on the answer.
 
@@ -212,7 +212,7 @@ The full catalogue, with how each was caught and the generalizable rule, is in [
 
 XAUUSD OHLCV from the Dukascopy public historical feed via [`dukascopy-node`](https://github.com/Leo4815162342/dukascopy-node). 15-minute bars from 2021, daily bars from 2003.
 
-Gold has no consolidated tape — every broker's feed differs slightly, so absolute levels are venue-specific and results carry that caveat. Spot checks against an independent feed showed drift of 2-4 price points on matched closes, which is normal and does not affect R-multiple conclusions.
+Gold has no consolidated tape; every broker's feed differs slightly, so absolute levels are venue-specific and results carry that caveat. Spot checks against an independent feed showed drift of 2-4 price points on matched closes, which is normal and does not affect R-multiple conclusions.
 
 Committed here: the full daily series (784 KB) and a 2021 15m sample. Rebuild the rest with `npm run fetch`.
 
@@ -232,4 +232,4 @@ Chart interaction during the discretionary phase of this work used [tradesdontli
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).

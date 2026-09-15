@@ -17,7 +17,7 @@ npm run fetch
 
 Scripts resolve `xauusd_m15.json` first and fall back to the 2021 sample if it is absent, printing a
 warning to stderr when they do. **Sample results are not the full-history results quoted in the
-README** — the fallback exists so the repository runs out of the box, not so numbers can be quoted
+README**. The fallback exists so the repository runs out of the box, not so numbers can be quoted
 from it silently.
 
 ## Caveat

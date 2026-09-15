@@ -2,11 +2,11 @@
 
 ## Why it exists
 
-I trade gold manually. I had been taught a setup — sweep a prior high or low, wait for price to close back inside on strong volume, enter the reclaim — and I traded it because the people who taught it were confident and the examples they showed worked.
+I trade gold manually. I had been taught a setup. Sweep a prior high or low, wait for price to close back inside on strong volume, enter on the reclaim. I traded it because the people who taught it were confident and the examples they showed worked.
 
 I wanted to know whether it actually worked, not whether it looked like it worked. So I set up an LLM agent as a research desk and pointed it at the question.
 
-The answer was no. Over 131,469 bars and 1,953 trades the setup loses money at t = −6.27, and it loses in five of the six years tested. I stopped trading it.
+The answer was no. Over 131,469 bars and 1,953 trades the setup loses money at t = -6.27, and it loses in five of the six years tested. I stopped trading it.
 
 This repository is the record, including the parts where the research told me things I did not want to hear and the parts where the agent was confidently wrong.
 
@@ -18,13 +18,13 @@ The agent wrote most of the code here. I want to be straightforward about that, 
 
 - **The standard of proof, before any data existed.** An edge is real only if it survives out-of-sample data, realistic costs, and parameter perturbation. Belief is not evidence.
 - **The kill rule, while I still believed in the setup.** If the numbers don't support it, say so plainly, no softening, and stop trading it. Investigating *why* it failed is allowed; quietly hunting for a variant that works is not. Writing that down before the results came in is the only reason it was possible to follow afterwards.
-- **The instruction to count every test.** When I asked the agent to find patterns, I asked it to find *our own* — and to report how many candidates it had tried, not just the ones that survived. That turned into the 98-test daily and 50-test intraday mining protocol with a corrected significance bar and a one-shot vault. One survivor from 98.
+- **The instruction to count every test.** When I asked the agent to find patterns, I asked it to find *our own*, and to report how many candidates it had tried, not just the ones that survived. That turned into the 98-test daily and 50-test intraday mining protocol with a corrected significance bar and a one-shot vault. One survivor from 98.
 - **Which market, and the cost of that choice.** Gold, because it is what I actually trade, accepting knowingly that it gives fewer clean samples than a crypto pair and that every broker's gold feed differs. I later dropped the second instrument entirely to stop the scope from spreading.
 - **The decision to publish a negative result** rather than quietly shelve it.
 
 **What the agent did:** wrote the backtest engine, the analysis and mining scripts, ran the matrix, and produced the research log.
 
-**What neither of us did alone:** catch the errors. That took both — see below.
+**What neither of us did alone:** catch the errors. That took both. see below.
 
 ## The time I caught the agent being wrong
 
@@ -34,17 +34,17 @@ It did not match what I was seeing on my own screen, so I pushed back and asked 
 
 The rule was false, and the recommendation built on it had been wrong. We replaced it and recorded why.
 
-I think this is the most useful thing in the project. [`agent/FAILURE-MODES.md`](agent/FAILURE-MODES.md) catalogues nine errors caught by structural checks — counters, cross-references, baselines. This one was caught by a human with domain contact noticing that a fluent answer did not match reality. Both kinds of check are necessary and neither substitutes for the other. An agent that sounds authoritative on a domain it has only read about is exactly as confident as one that has it right.
+I think this is the most useful thing in the project. [`agent/FAILURE-MODES.md`](agent/FAILURE-MODES.md) catalogues nine errors caught by structural checks: counters, cross-references, baselines. This one was caught by a human with domain contact noticing that a fluent answer did not match reality. Both kinds of check are necessary and neither substitutes for the other. An agent that sounds authoritative on a domain it has only read about is exactly as confident as one that has it right.
 
 ## What I learned that transfers
 
-**Fluent and correct come apart, and fluency wins by default.** A response saying "price swept liquidity below 4,022 and reclaimed on volume, targeting 4,111" is well-structured, uses the framework correctly, and can be produced without looking at a chart. Grading that requires criteria set in advance — which is why I ended up writing [`agent/EVALUATION.md`](agent/EVALUATION.md).
+**Fluent and correct come apart, and fluency wins by default.** A response saying "price swept liquidity below 4,022 and reclaimed on volume, targeting 4,111" is well-structured, uses the framework correctly, and can be produced without looking at a chart. Grading that requires criteria set in advance, which is why I ended up writing [`agent/EVALUATION.md`](agent/EVALUATION.md).
 
 **The wrong answers were never sloppy.** Every error in this project was well-formed and internally consistent, and wrong about something the output could not describe: its scope, its units, its denominator, its independence assumptions. Reading more carefully does not catch these. Only a check that exists independently of the answer does.
 
 **Verification has to be structural, not attentive.** Attention degrades exactly when a result is exciting. A t-statistic of 8.7 is when you are least likely to go looking for a bug, so the check has to already exist. Counters on both sides of a silent drop. Aggregates compared against their rows. A deliberately naive baseline, so you know what "good" looks like on this data rather than guessing.
 
-**Small samples lie in a measurable way.** Three months of data said profit factor 1.70. Five and a half years said 0.73. Not a smaller edge — the opposite sign. I was one dataset away from risking real money on a proven loser.
+**Small samples lie in a measurable way.** Three months of data said profit factor 1.70. Five and a half years said 0.73. Not a smaller edge, the opposite sign. I was one dataset away from risking real money on a proven loser.
 
 **A negative result is a result.** The rule I was trading does not work. Knowing that cost me a few weeks and saved me considerably more.
 
@@ -64,4 +64,4 @@ The honest state of the work:
 
 ---
 
-Questions or corrections welcome — including about the research itself. If something here is wrong I would rather know.
+Questions or corrections welcome, including about the research itself. If something here is wrong I would rather know.

@@ -24,7 +24,7 @@ module.exports = function dataPath(name) {
   const sample = SAMPLES[name] && path.join(dir, SAMPLES[name]);
   if (sample && fs.existsSync(sample)) {
     process.stderr.write(
-      `\n[data] ${name} not found — falling back to the committed SAMPLE ` +
+      `\n[data] ${name} not found, falling back to the committed SAMPLE ` +
       `(${SAMPLES[name]}).\n` +
       `[data] Sample results are NOT the full-history results quoted in the README.\n` +
       `[data] Build the full dataset with:  npm run fetch\n\n`

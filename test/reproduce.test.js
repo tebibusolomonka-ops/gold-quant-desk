@@ -26,7 +26,7 @@ const near = (a, b, dp = 4) => assert.strictEqual(+a.toFixed(dp), +b.toFixed(dp)
   `expected ${b.toFixed(dp)}, got ${a.toFixed(dp)}`);
 
 // ---------------------------------------------------------------------
-//  Data integrity — a moved dataset invalidates every pinned number
+//  Data integrity: a moved dataset invalidates every pinned number
 // ---------------------------------------------------------------------
 test('sample dataset is intact', () => {
   assert.strictEqual(bars.length, 23626);
@@ -48,7 +48,7 @@ test('daily dataset is intact', () => {
 });
 
 // ---------------------------------------------------------------------
-//  The kill result — the strategy loses, on the sample as on the whole
+//  The kill result: the strategy loses, on the sample as on the whole
 // ---------------------------------------------------------------------
 const CASES = [
   {
@@ -67,7 +67,7 @@ const CASES = [
     n: 388, expectancyR: -0.128818, profitFactor: 0.775543, tStat: -2.331367, winRate: 0.484536,
   },
   {
-    name: 'zero costs — the edge is not merely eaten by spread',
+    name: 'zero costs: the edge is not merely eaten by spread',
     cfg: { flatOnly: true, spread: 0 },
     n: 379, expectancyR: -0.090559, profitFactor: 0.838104, tStat: -1.496994, winRate: 0.440633,
   },
@@ -81,18 +81,18 @@ for (const c of CASES) {
     near(s.profitFactor, c.profitFactor);
     near(s.tStat, c.tStat);
     near(s.winRate, c.winRate);
-    assert.ok(s.expectancyR < 0, 'expectancy must be negative — this strategy loses');
+    assert.ok(s.expectancyR < 0, 'expectancy must be negative; this strategy loses');
   });
 }
 
-test('SESSION levels beat arbitrary PIVOTs — the one surviving piece of the theory', () => {
+test('SESSION levels beat arbitrary PIVOTs: the one surviving piece of the theory', () => {
   const pivot = stats(run(bars, { ...P, flatOnly: true, spread: 0 }).trades);
   const session = stats(run(bars, { ...P, flatOnly: true, spread: 0, levelMode: 'SESSION' }).trades);
   assert.ok(session.expectancyR > pivot.expectancyR,
     `session (${session.expectancyR.toFixed(4)}) should beat pivot (${pivot.expectancyR.toFixed(4)})`);
 });
 
-test('K-sweep shows no decay structure — the pre-registered prediction failed', () => {
+test('K-sweep shows no decay structure: the pre-registered prediction failed', () => {
   const ks = [1, 2, 3, 4, 5].map(K => stats(run(bars, { ...P, flatOnly: true, K }).trades).expectancyR);
   for (const e of ks) assert.ok(e < 0, `every K must be negative, saw ${e.toFixed(4)}`);
   const monotonicDecay = ks.every((e, i) => i === 0 || e <= ks[i - 1]);
@@ -100,7 +100,7 @@ test('K-sweep shows no decay structure — the pre-registered prediction failed'
 });
 
 // ---------------------------------------------------------------------
-//  Engine bias control — if random entries are not 50-50, nothing above
+//  Engine bias control: if random entries are not 50-50, nothing above
 //  can be trusted
 // ---------------------------------------------------------------------
 test('random entries hit +1R before -1R about half the time', () => {
@@ -141,7 +141,7 @@ test('end-of-week long tilt reproduces on 23.5 years of daily data', () => {
 });
 
 // ---------------------------------------------------------------------
-//  Full history — only when the 14 MB dataset has been fetched
+//  Full history: only when the 14 MB dataset has been fetched
 // ---------------------------------------------------------------------
 // The published figures describe a specific window. Bound the test to that
 // window rather than to the whole file, so refreshing the dataset with newer
@@ -167,7 +167,7 @@ test('any data beyond the published window is reported, not silently included',
     const all = JSON.parse(fs.readFileSync(FULL));
     const extra = all.filter(b => b.timestamp >= PUBLISHED_END);
     if (extra.length === 0) return;
-    // Not a failure — newer data is welcome. But it is out-of-sample relative
+    // Not a failure; newer data is welcome. But it is out-of-sample relative
     // to everything published here, so it must be looked at deliberately and
     // once, not folded into the headline number by accident.
     const s = stats(run(all, { ...P, flatOnly: true }).trades);
