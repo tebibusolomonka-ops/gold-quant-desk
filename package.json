@@ -1,0 +1,30 @@
+{
+  "name": "gold-quant-desk",
+  "version": "1.0.0",
+  "description": "An LLM agent was given a quant research mandate and a kill rule. It killed the strategy it was built to trade.",
+  "main": "scripts/engine.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "backtest": "node scripts/engine.js",
+    "fetch": "node scripts/fetch.js 2021-01-01 2026-07-25 data/xauusd_m15.json",
+    "fetch:daily": "node scripts/fetchd.js",
+    "eda": "node scripts/eda.js",
+    "vol": "node scripts/vol.js",
+    "trend": "node scripts/trend.js",
+    "mine": "node scripts/mine_daily.js",
+    "mine:intraday": "node scripts/mine_15m.js"
+  },
+  "keywords": [
+    "quantitative-finance",
+    "backtesting",
+    "negative-results",
+    "reproducible-research",
+    "llm-agent",
+    "xauusd"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "dukascopy-node": "^1.50.0"
+  }
+}

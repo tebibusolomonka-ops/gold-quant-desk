@@ -1,0 +1,9 @@
+node_modules/
+package-lock.json
+
+# full 15m history is 14 MB — rebuild with `npm run fetch`
+data/xauusd_m15.json
+
+*.log
+.DS_Store
+Thumbs.db
