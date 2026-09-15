@@ -22,6 +22,7 @@ The trading is the domain. The subject is what happens when a capable model does
 | [**Rulebook**](agent/RULEBOOK.md) | The operating instructions, including the `SUSPENDED` block the agent wrote against its own prior orders |
 | [**Guardrail**](agent/guardrail.js) | A subjective judgment call ("is this a setup?") replaced by an executable definition that says which criterion failed |
 | [**Research log**](research/program.md) | Every phase, every verdict, in the order it happened |
+| [**About**](ABOUT.md) | Why I built this, what I set versus what the agent did, and the time I caught it being wrong |
 
 ### What this demonstrates
 
