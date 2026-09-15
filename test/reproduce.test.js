@@ -143,12 +143,38 @@ test('end-of-week long tilt reproduces on 23.5 years of daily data', () => {
 // ---------------------------------------------------------------------
 //  Full history — only when the 14 MB dataset has been fetched
 // ---------------------------------------------------------------------
-test('full 5.5-year history reproduces the published kill result', { skip: !fs.existsSync(FULL) }, () => {
-  const full = JSON.parse(fs.readFileSync(FULL));
-  assert.strictEqual(full.length, 131469);
+// The published figures describe a specific window. Bound the test to that
+// window rather than to the whole file, so refreshing the dataset with newer
+// bars extends the data without invalidating the reproduction. A pinned
+// number should be pinned to the period it describes, not to a file length.
+const PUBLISHED_END = Date.UTC(2026, 6, 25); // 2026-07-25, exclusive
+
+test('published window reproduces the kill result', { skip: !fs.existsSync(FULL) }, () => {
+  const full = JSON.parse(fs.readFileSync(FULL))
+    .filter(b => b.timestamp < PUBLISHED_END);
+  assert.strictEqual(full.length, 131469,
+    'the published window must contain exactly the bars the README describes');
   const s = stats(run(full, { ...P, flatOnly: true }).trades);
   assert.strictEqual(s.n, 1953);
   near(s.expectancyR, -0.1592, 4);
   near(s.profitFactor, 0.73, 2);
   near(s.tStat, -6.27, 2);
+  assert.ok(s.tStat < -2, 'the loss must remain statistically significant');
 });
+
+test('any data beyond the published window is reported, not silently included',
+  { skip: !fs.existsSync(FULL) }, () => {
+    const all = JSON.parse(fs.readFileSync(FULL));
+    const extra = all.filter(b => b.timestamp >= PUBLISHED_END);
+    if (extra.length === 0) return;
+    // Not a failure — newer data is welcome. But it is out-of-sample relative
+    // to everything published here, so it must be looked at deliberately and
+    // once, not folded into the headline number by accident.
+    const s = stats(run(all, { ...P, flatOnly: true }).trades);
+    console.log(`\n  [out-of-sample] ${extra.length} bars past the published window ` +
+      `(to ${new Date(all.at(-1).timestamp).toISOString().slice(0, 10)}).\n` +
+      `  [out-of-sample] Full-file expectancy ${s.expectancyR.toFixed(4)}R over ${s.n} trades ` +
+      `vs published -0.1592R over 1953.\n` +
+      `  [out-of-sample] Treat as a fresh observation; update the README deliberately.\n`);
+    assert.ok(true);
+  });
