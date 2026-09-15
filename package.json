@@ -21,6 +21,9 @@
     "negative-results",
     "reproducible-research",
     "llm-agent",
+    "agent-evaluation",
+    "rubric",
+    "model-failure-modes",
     "xauusd"
   ],
   "license": "MIT",

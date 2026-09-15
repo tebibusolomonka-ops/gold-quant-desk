@@ -1,10 +1,34 @@
 # Gold Quant Desk
 
+[![tests](https://github.com/tebibusolomonka-ops/gold-quant-desk/actions/workflows/test.yml/badge.svg)](https://github.com/tebibusolomonka-ops/gold-quant-desk/actions/workflows/test.yml)
+
 **An LLM agent was given a quant research mandate and a kill rule. It killed the strategy it was built to trade.**
 
 This repository is the record of that: the backtest engine, the exploratory analysis, the pattern miner, and the agent rulebook that was rewritten against its own prior instructions once the evidence came in.
 
 The headline result is negative. That is the point.
+
+---
+
+## Start here
+
+The trading is the domain. The subject is what happens when a capable model does expert work for months, how its wrong answers look from close up, and which checks catch them.
+
+| | |
+|---|---|
+| [**Failure modes**](agent/FAILURE-MODES.md) | Nine wrong answers produced during this research, why each was believable, and the check that caught it |
+| [**Evaluation rubric**](agent/EVALUATION.md) | How to grade analytical output in this domain — including a worked comparison of a fluent wrong answer against a correct one |
+| [**Architecture**](agent/ARCHITECTURE.md) | Tool layer, cross-session memory, a self-amending rulebook, and the execution boundary |
+| [**Rulebook**](agent/RULEBOOK.md) | The operating instructions, including the `SUSPENDED` block the agent wrote against its own prior orders |
+| [**Guardrail**](agent/guardrail.js) | A subjective judgment call ("is this a setup?") replaced by an executable definition that says which criterion failed |
+| [**Research log**](research/program.md) | Every phase, every verdict, in the order it happened |
+
+### What this demonstrates
+
+- **Catching confidently wrong output in a specialist domain.** Every error in the catalogue was well-formed, internally consistent, and wrong about something the output could not describe — its scope, its units, its denominator, its independence assumptions. None were caught by reading more carefully.
+- **Verification that is structural rather than attentive.** Counters on both sides of a silent drop. Aggregates checked against their rows. A deliberately naive baseline to calibrate what "good" looks like. Attention degrades exactly when a result is exciting; instrumentation does not.
+- **Constraining model judgment with executable rules.** The guardrail accepts 2.4% of arbitrary bars and names the failing criterion on rejection, which makes disagreement inspectable instead of rhetorical.
+- **Accepting an unwanted answer.** The kill rule was written while the strategy was still believed in, and executed when the evidence arrived.
 
 ---
 
@@ -101,6 +125,12 @@ node scripts/engine.js data/xauusd_m15.json K=3 levelMode=SESSION useRegime=true
 ## What's in here
 
 ```
+agent/FAILURE-MODES.md  nine wrong answers and the checks that caught them
+agent/EVALUATION.md     rubric for grading analytical output in this domain
+agent/ARCHITECTURE.md   tools, memory, the self-amending rulebook, the execution boundary
+agent/RULEBOOK.md       the operating instructions, including the agent's own kill switch
+agent/guardrail.js      subjective setup identification, made executable
+
 scripts/engine.js       backtest engine - the strategy spec, executable
 scripts/eda.js          autocorrelation, excursion profiles, engine bias check
 scripts/momentum.js     momentum tests, disjoint windows, detrended
@@ -111,9 +141,29 @@ scripts/mine_15m.js     50-test intraday miner
 scripts/friday.js       the one daily survivor, isolated
 scripts/fetch.js        rebuild the 15m dataset
 scripts/fetchd.js       rebuild the daily dataset
-agent/RULEBOOK.md       the agent's operating instructions, including its own kill switch
+
 research/program.md     the full research log - every phase, every verdict
+test/                   19 tests pinning every published number
 ```
+
+Adjudicate a bar against the objective definition:
+
+```bash
+node agent/guardrail.js bar=539 dir=-1
+```
+
+```
+NOT A SETUP — failed: volume_confirmation
+  PASS  level_is_confirmed_pivot: level 1850.59 from bar 528, confirmed 6 bars before this one
+  PASS  sweep_depth: wick 0.92 beyond level = 0.253 ATR (need > 0.1)
+  PASS  reclaim_close: close 1846.94 is back below 1850.59
+  PASS  reclaim_within_K: reclaim came 2 bar(s) after the sweep (limit 2)
+  FAIL  volume_confirmation: volume 0.973 vs 1.5x SMA20 1.44 (ratio 1.01)
+  PASS  no_opposite_signal: no conflicting signal on this bar
+  PASS  cooldown: no prior signal supplied
+```
+
+A near-miss on one criterion, stated as a number. This is the case the guardrail exists for: everything about the bar looks like a sweep, and a model asked in natural language would very likely have called it one.
 
 ---
 
@@ -131,21 +181,29 @@ Three design choices made that possible:
 
 **Counted tests.** The pattern miner ran 98 daily and 50 intraday candidates against a corrected significance bar (|t| >= 3.3) and a TRAIN / VALIDATE / VAULT split with a one-shot vault. One survivor from 98 is roughly what chance and a real weekend effect jointly predict — a credential for the pipeline, not a discovery to size up on.
 
+The surrounding system — an application with no API driven over a debug protocol, a plain-markdown memory layer that survives between sessions, and the boundary that kept the agent from ever placing an order — is described in [`agent/ARCHITECTURE.md`](agent/ARCHITECTURE.md).
+
+### Grading the output
+
+Judging this kind of work is harder than producing it, because in this domain fluent and correct come apart. A response that says *"gold swept liquidity below 4,022 and reclaimed on strong volume, targeting 4,111"* is well-structured, uses the framework properly, and is indistinguishable from a response written by someone who never looked at the chart.
+
+[`agent/EVALUATION.md`](agent/EVALUATION.md) is the rubric used here: eight dimensions, three of them gating, scored against the failures that motivated them — sourcing, calibration, cost realism, look-ahead discipline, multiple-testing disclosure, baseline comparison, falsifiability, and refusal to fabricate. It includes a worked comparison of two answers to the same question, one fluent and wrong, one correct and less satisfying, and a note on why the second scores higher despite being the one a reader enjoys less.
+
 ---
 
 ## Failure modes hit along the way
 
-Recorded because they are reusable, and because each one briefly produced a confident wrong answer.
+Nine wrong answers were produced during this research. Each was well-formed, internally consistent, and wrong about something the output could not describe. A few, in short:
 
 **Overlapping windows inflated a t-statistic to 8.7.** Momentum looked like a major finding. Forward windows that overlap violate independence and inflate t by roughly the square root of the horizon. Re-run with disjoint windows and detrended, every t fell between -1.78 and +1.62 — nothing.
 
 **"0 trades" was ambiguous.** A strategy returned no trades despite firing 21 signals. The entries were not un-generated; they were silently rejected because position notional exceeded account capital. An explicit entry-attempt counter isolated it in minutes. Fill rejection is silent — always compare attempts against fills.
 
-**The platform's `total_trades` counted exit legs, not trades.** Partial exits meant one entry produced up to three legs. A reported 65 "trades" was 23 independent positions, and the reported win rate was leg-based. Any statistic quoted from a tool needs its denominator checked.
+**A tool returned month-scale extremes as intraday context.** A request for a 100-bar intraday summary came back with the month's high and low. The analysis built a confident narrative around a dramatic move that had not happened that day. Every number in it was genuine; only the scope was wrong, and the payload did not state its scope.
 
-**Two of 24 hour-of-day buckets came back significant.** With 24 tests, about 1.2 false positives are expected. They were not treated as an edge.
+**The platform's `total_trades` counted exit legs, not trades.** Partial exits meant one entry produced up to three legs. A reported 65 "trades" was 23 independent positions, and the reported win rate was leg-based — biased upward, in the same direction as the hypothesis.
 
-**A random-entry control was run against the engine.** P(hit +1R before -1R) came back 49.8 / 49.9 / 50.0 / 50.1% across four horizons. Exactly 50-50 confirms the engine is unbiased — worth establishing before trusting any result it produces.
+The full catalogue, with how each was caught and the generalizable rule, is in [`agent/FAILURE-MODES.md`](agent/FAILURE-MODES.md). The short version: none were caught by reading the answer more carefully. Every one was caught by a check that did not depend on the answer.
 
 ---
 
